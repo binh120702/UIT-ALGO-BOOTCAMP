@@ -1,0 +1,13 @@
+testS:
+https://github.com/ginowadays/UIT-ALGO-BOOTCAMP/tree/main/make_contests/kick-off-contest-2021
+submit:
+1 
+https://khmt.uit.edu.vn/wecode/algobootcamp/practice/show/88
+2
+https://khmt.uit.edu.vn/wecode/algobootcamp/practice/show/89
+3
+https://khmt.uit.edu.vn/wecode/algobootcamp/practice/show/90
+4
+https://khmt.uit.edu.vn/wecode/algobootcamp/practice/show/91
+5
+https://khmt.uit.edu.vn/wecode/algobootcamp/practice/show/92
