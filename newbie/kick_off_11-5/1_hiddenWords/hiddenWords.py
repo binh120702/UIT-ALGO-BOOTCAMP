@@ -2,42 +2,35 @@ n, m, q = map(int, input().strip().split())
 s = []
 for i in range(n):
     s.append(input())
-tree = [[0 for i in range(26)] for j in range(n*m*10+10)]
+sol = [0]*10005
+myMap = {}
 
-
-cnt = 1
-def add(pos, s):
-    global cnt
-    val = ord(s)-ord('a')
-    if tree[pos][val]!=0:
-        return tree[pos][val]
-    cnt+=1
-    tree[pos][val]=cnt
-    return cnt
+for i in range(q):
+    st = input()
+    if not myMap.get(st):
+        myMap[st] = []
+    myMap[st].append(i)
 
 for i in range(n):
     for j in range(m):
-        cur_pos = add(1,s[i][j])
-        for k in range(1,10):
-            if i+k>=n: 
+        # right
+        cur_str = ''
+        for step in range(10):
+            if j+step>=m:
                 break
-            cur_pos = add(cur_pos, s[i+k][j])
-
-        cur_pos = add(1,s[i][j])
-        for k in range(1,10):
-            if j+k>=n:
+            cur_str+=s[i][j+step]
+            if myMap.get(cur_str) != None:
+                for id in myMap[cur_str]:
+                    sol[id] = 1
+        # down
+        cur_str = ''
+        for step in range(10):
+            if i+step>=n:
                 break
-            cur_pos = add(cur_pos, s[i][j+k])
-
-def check_if_exist(s):
-    cur = 1
-    for chr in s:
-        val = ord(chr)-ord('a')
-        if tree[cur][val]==0:
-            return 0
-        cur = tree[cur][val]
-    return 1
-
+            cur_str+=s[i+step][j]
+            if myMap.get(cur_str) != None:
+                for id in myMap[cur_str]:
+                    sol[id] = 1
+        
 for i in range(q):
-    txt = input()
-    print(check_if_exist(txt),end='')
+    print(sol[i], end='')
