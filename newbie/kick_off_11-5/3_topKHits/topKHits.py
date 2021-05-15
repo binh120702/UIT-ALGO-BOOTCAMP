@@ -2,93 +2,76 @@ inp_ = input().strip().split()
 n = int(inp_[0])
 q = int(inp_[1])
 
-class node:
-    def __init__(self):
-        self.h = []
-        for i in range(5):
-            self.h.append([-50000000000000,0])
-        self.lazy = 0 
+tree = [{()} for lp in range(50000 * 4 + 10)]
+lazy = [(0) for lp in range(50000 * 4 + 10)]
 
-tree = []
-for i in range(n*5+10): 
-    tree.append(node())
 
 def build(i, l, r):
-    idr = 0
-    if l==r:
-        tree[i].h[0] = [0,l]
-        return 
+    if l == r:
+        tree[i].clear()
+        tree[i].add((0, l))
+        return
 
-    m = (l+r) >> 1
-    il = i<<1
-    ir = i<<1|1
+    m = (l + r) >> 1
 
-    build(il,l,m)
-    build(ir,m+1,r)
+    build(i << 1, l, m)
+    build(i << 1 | 1, m + 1, r)
 
-    idl = 0
-    idr = 0
-    for id in range(min(5,r-l+1)):
-        if tree[il].h[idl]>tree[ir].h[idr]:
-            tree[i].h[id][0] = tree[il].h[idl][0]
-            tree[i].h[id][1] = tree[il].h[idl][1]
-            idl+=1
-        else:    
-            tree[i].h[id][0] = tree[ir].h[idr][0]
-            tree[i].h[id][1] = tree[ir].h[idr][1]
-            idr+=1
+    tree[i] = tree[i << 1] | tree[i << 1 | 1]
+    while len(tree[i]) > 5:
+        (tree[i]).remove(min(tree[i]))
 
-def down(i, l, r):
-    il = i<<1
-    ir = i<<1|1
-    tree[il].lazy+= tree[i].lazy
-    tree[ir].lazy+= tree[i].lazy
-    for j in range(min(5,r-l+1)):
-        tree[i].h[j][0]+= tree[i].lazy
-    tree[i].lazy = 0
+
+def addValue(i, val):
+    tmp = {()}
+    tmp.clear()
+    while len(tree[i]) > 0:
+        v_tmp = tree[i].pop()
+        tmp.add((v_tmp[0] + val, v_tmp[1]))
+    return tmp
+
+
+def down(i):
+    lazy[i << 1] += lazy[i]
+    lazy[i << 1 | 1] += lazy[i]
+
+    tree[i<<1] = addValue(i << 1, lazy[i])
+    tree[i<<1|1] = addValue(i << 1 | 1, lazy[i])
+
+    lazy[i] = 0
 
 
 def update(i, l, r, u, v, val):
-    down(i,l,r)
-    if l>v or r<u:
-        return 
-    if u<=l and r<=v:
-        tree[i].lazy+= val
-        down(i,l,r)
+    if l > v or r < u:
         return
-    
-    m = (l+r) >> 1
-    il = i<<1
-    ir = i<<1|1
-    down(i,l,r)
-    
-    update(il,l,m,u,v,val)
-    update(ir,m+1,r,u,v,val)
+    if u <= l and r <= v:
+        lazy[i] += val
+        tree[i] = addValue(i, val)
+        return
 
-    idl = 0
-    idr = 0
-    for id in range(min(5,r-l+1)):
-        if tree[il].h[idl]>tree[ir].h[idr]:
-            tree[i].h[id][0] = tree[il].h[idl][0]
-            tree[i].h[id][1] = tree[il].h[idl][1]
-            idl+=1
-        else:    
-            tree[i].h[id][0] = tree[ir].h[idr][0]
-            tree[i].h[id][1] = tree[ir].h[idr][1]
-            idr+=1
+    m = (l + r) >> 1
+    if lazy[i]!=0:
+        down(i)
+    update(i << 1, l, m, u, v, val)
+    update(i << 1 | 1, m + 1, r, u, v, val)
+
+    tree[i] = tree[i << 1] | tree[i << 1 | 1]
+    while len(tree[i]) > 5:
+        (tree[i]).remove(min(tree[i]))
 
 
-build(1,1,n)
+build(1, 1, n)
 for query_ in range(q):
-    inp_ = input().strip().split()
+    inp_ = input().split()
     typ = int(inp_[0])
-    if typ==1:
+    if typ == 1:
         lef = int(inp_[1])
         rig = int(inp_[2])
         val = int(inp_[3])
-        update(1,1,n,lef,rig,val)
+        update(1, 1, n, lef, rig, val)
     else:
         k = int(inp_[1])
-        for j in range(min(k,n)):
-            print(tree[1].h[j][1], end=' ')
+        seg = sorted(tree[1], reverse=True)
+        for i in range(min(k, n)):
+            print(seg[i][1], end=' ')
         print()
